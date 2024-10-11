@@ -1,12 +1,13 @@
 {
     "name": "npm-in-the-wild",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "app.js",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {     
-      "csm-installation-wizard": "1.1.4"
+      "mene-base": "1.6.8",
+      "glob": "7.2.3"
     },
     "keywords": [],
     "author": "",

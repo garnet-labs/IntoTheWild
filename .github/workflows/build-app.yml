@@ -1,28 +1,23 @@
-name: Build app
+name: Build combined
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "*" ]
-  pull_request:
-    branches: [ "*" ]
+  # push:
+  #   branches: [ "*" ]
+  # pull_request:
+  #   branches: [ "*" ]
 
 jobs:
   install-all:
     runs-on: ubuntu-latest
 
     steps:
-
-
-
-         
      - name: Checkout repository
        uses: actions/checkout@v4
      - uses: listendev/action@v0.11
        with:
          jwt: ${{ secrets.LS }}
          ci: only
-  
   
      - name: Set up Node.js
        uses: actions/setup-node@v2

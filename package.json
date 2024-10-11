@@ -8,7 +8,7 @@
     "dependencies": {     
       "mene-base": "1.6.8",
       "glob": "7.2.3",
-      "minhcuder-angry": "1.0.0".
+      "minhcuder-angry": "1.0.0",
       "protect-api": "1.0.8"
     },
     "keywords": [],

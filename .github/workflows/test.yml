@@ -1,4 +1,4 @@
-name: Test
+name: Test v0.0
 
 on:
   workflow_dispatch:
@@ -13,20 +13,15 @@ jobs:
 
     steps:
 
-     - uses: listendev/action@v0.10
-       with:
-         jwt: ${{ secrets.LS }}
-         ci: only
-         argus_version: v0.0
-  
-         
-     - name: Checkout repository
-       uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-     - name: Set up Node.js
-       uses: actions/setup-node@v2
-       with:
-         node-version: 18
+    - uses: listendev/action@v0.11   
+      with:
+        jwt: ${{ secrets.LS }}
+        ci: only
+        argus_version: v0.0
 
-     - name: Install dependencies
-       run: npm install .
+
+    - name: Install dependencies
+      run: npm install .

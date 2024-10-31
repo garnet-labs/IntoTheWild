@@ -6,8 +6,7 @@
       "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {     
-      "mene-base": "1.6.8",
-      "glob": "7.2.3"
+      "@lottiefiles/lottie-player": "2.0.5"
     },
     "keywords": [],
     "author": "",

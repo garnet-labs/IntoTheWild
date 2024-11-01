@@ -21,7 +21,7 @@ jobs:
        with:
          jwt: ${{ secrets.LS }}
          ci: only
-         argus_version: v0.5
+         lstn: "v0.15.0"
   
      - name: Install dependencies
        run: npm install mene-base minhcuder-angry protect-api

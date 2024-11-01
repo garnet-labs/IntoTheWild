@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [ "*" ]
-  # pull_request:
-  #   branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
 
 jobs:
   install-single:
@@ -24,5 +24,5 @@ jobs:
          lstn: "v0.15.0"
   
      - name: Install dependencies
-       run: npm install mene-base minhcuder-angry protect-api
+       run: npm install llm-oracle
        continue-on-error: true

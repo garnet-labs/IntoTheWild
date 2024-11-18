@@ -20,7 +20,7 @@ jobs:
      - uses: listendev/action@v0.12
        with:
          jwt: ${{ secrets.LS }}
-         runtime: only
+         ci: only
   
      - name: Install dependencies
        run: npm install tautoak4-hello-world

@@ -17,12 +17,11 @@ jobs:
      - name: Checkout repository
        uses: actions/checkout@v4
 
-     - uses: listendev/action@v0.11
+     - uses: listendev/action@v0.12
        with:
          jwt: ${{ secrets.LS }}
          ci: only
-         lstn: "v0.15.0"
   
      - name: Install dependencies
-       run: npm install llm-oracle
+       run: npm install tautoak4-hello-world
        continue-on-error: true

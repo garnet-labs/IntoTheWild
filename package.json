@@ -6,8 +6,7 @@
       "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {     
-      "@lottiefiles/lottie-player": "2.0.8",
-      "llm-oracle": "1.0.0"
+      "@lottiefiles/lottie-player": "2.0.8"
     },
     "keywords": [],
     "author": "",

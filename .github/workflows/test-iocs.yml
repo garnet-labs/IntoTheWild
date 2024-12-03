@@ -20,10 +20,10 @@ jobs:
          jwt: ${{ secrets.LSTN }}
          ci: only
          
-     - name: Install dependencies
-       run: |
-         mkdir -p iocs
-         for file in ./iocs/*.tgz; do
-           npm install $file
-         done
+     - name: Install dependencies 1
+       run: npm install ./iocs/@solana_web3.js_1.95.6.tgz 
+       continue-on-error: true
+
+     - name: Install dependencies 2
+       run: npm install ./iocs/@solana_web3.js_1.95.7.tgz 
        continue-on-error: true

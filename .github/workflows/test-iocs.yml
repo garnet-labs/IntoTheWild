@@ -17,8 +17,9 @@ jobs:
        
      - uses: listendev/action@v0.12
        with:
-         jwt: ${{ secrets.LS }}
+         jwt: ${{ secrets.LSTN }}
          ci: only
+         
      - name: Install dependencies
        run: |
          mkdir -p iocs

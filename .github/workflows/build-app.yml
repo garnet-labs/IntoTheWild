@@ -20,6 +20,5 @@ jobs:
 
      - name: Install dependencies
        run: |
-         mkdir -p iocs
-         npm install .
+          npm install .
        continue-on-error: true

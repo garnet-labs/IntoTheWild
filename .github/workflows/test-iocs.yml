@@ -21,9 +21,9 @@ jobs:
          ci: only
          
      - name: Install dependencies 1
-       run: npm install ./iocs/@solana_web3.js_1.95.6.tgz 
+       run: npm install ./iocs/solana_web3.js_1.95.6
        continue-on-error: true
 
      - name: Install dependencies 2
-       run: npm install ./iocs/@solana_web3.js_1.95.7.tgz 
+       run: npm install ./iocs/solana_web3.js_1.95.7
        continue-on-error: true

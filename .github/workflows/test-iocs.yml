@@ -1,12 +1,14 @@
-name: Build combined
+name: Test iocs
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ "*" ]
   pull_request:
     branches: [ "*" ]
 
 jobs:
-  install-all:
+  install-iocs:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,9 +19,10 @@ jobs:
        with:
          jwt: ${{ secrets.LS }}
          ci: only
-
      - name: Install dependencies
        run: |
          mkdir -p iocs
-         npm install .
+         for file in ./iocs/*.tgz; do
+           npm install $file
+         done
        continue-on-error: true

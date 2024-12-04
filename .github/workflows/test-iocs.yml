@@ -8,50 +8,79 @@ on:
     branches: [ "*" ]
 
 jobs:
-  install-iocs:
+  test-1-95-6:
     runs-on: ubuntu-latest
-
     steps:
-     - name: Checkout repository
-       uses: actions/checkout@v4
-       
-     - name: Setup Node.js
-       uses: actions/setup-node@v4
-       with:
-         node-version: '18'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - uses: listendev/action@v0.12
+        with:
+          jwt: ${{ secrets.LSTN }}
+          ci: only
+      - name: Install test dependencies
+        run: |
+          npm install puppeteer @peculiar/webcrypto node-fetch@2
+      - name: Install IOC 1.95.6
+        run: npm install ./iocs/solana_web3.js_1.95.6
+      - name: Test Version 1.95.6
+        run: node ./iocs/tests/runners/test-1.95.6.js
+        continue-on-error: true
 
-     - uses: listendev/action@v0.12
-       with:
-         jwt: ${{ secrets.LSTN }}
-         ci: only
-         
-     - name: Install test dependencies
-       run: |
-         npm install puppeteer
-         npm install @peculiar/webcrypto
-         npm install node-fetch@2
-         npm install @solana/web3.js@1.94.0  # Known good version for baseline
+  test-1-95-7:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - uses: listendev/action@v0.12
+        with:
+          jwt: ${{ secrets.LSTN }}
+          ci: only
+      - name: Install test dependencies
+        run: |
+          npm install puppeteer @peculiar/webcrypto node-fetch@2
+      - name: Install IOC 1.95.7
+        run: npm install ./iocs/solana_web3.js_1.95.7
+      - name: Test Version 1.95.7
+        run: node ./iocs/tests/runners/test-1.95.7.js
+        continue-on-error: true
 
-     - name: Install IOC dependencies 1
-       run: npm install ./iocs/solana_web3.js_1.95.6
-       continue-on-error: true
+  test-safe-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - uses: listendev/action@v0.12
+        with:
+          jwt: ${{ secrets.LSTN }}
+          ci: only
+      - name: Install test dependencies
+        run: |
+          npm install puppeteer @peculiar/webcrypto node-fetch@2
+      - name: Install safe version
+        run: npm install @solana/web3.js@1.94.0
+      - name: Test Safe Version
+        run: node ./iocs/tests/runners/test-safe.js
+        continue-on-error: true
 
-     - name: Install IOC dependencies 2
-       run: npm install ./iocs/solana_web3.js_1.95.7
-       continue-on-error: true
-
-     - name: Run Comparison Tests
-       run: node ./iocs/tests/solana-web3.test.js
-       continue-on-error: true
-
-     - name: Generate Report
-       if: always()
-       run: |
-         echo "### Test Results" >> $GITHUB_STEP_SUMMARY
-         cat test-output.log >> $GITHUB_STEP_SUMMARY
-         
-         if grep -q "SECURITY WARNINGS" test-output.log; then
-           echo "::warning::Potential malicious behavior detected"
-           echo "::error::Security anomalies found in tested versions"
-           exit 1
-         fi
+  analyze-results:
+    needs: [test-1-95-6, test-1-95-7, test-safe-version]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download test results
+        uses: actions/download-artifact@v3
+        with:
+          path: test-results
+      - name: Analyze and Compare
+        run: node ./iocs/tests/analyze-results.js
+      - name: Generate Report
+        if: always()
+        run: |
+          echo "### Test Results" >> $GITHUB_STEP_SUMMARY
+          cat ./test-results/summary.json >> $GITHUB_STEP_SUMMARY

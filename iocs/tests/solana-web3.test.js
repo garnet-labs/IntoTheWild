@@ -1,74 +1,112 @@
 const solanaWeb3_1 = require('../solana_web3.js_1.95.6/lib/index.browser.cjs.js');
 const solanaWeb3_2 = require('../solana_web3.js_1.95.7/lib/index.browser.cjs.js');
+const puppeteer = require('puppeteer');
 
-async function testSolanaWeb3() {
+// Mock fetch to detect suspicious network calls
+const mockFetchCalls = [];
+global.fetch = async (url, options) => {
+  mockFetchCalls.push({url, options});
+  return { ok: true };
+};
+
+async function testSuspiciousBehavior() {
+  console.log('Testing for suspicious behavior...');
+  
+  // Test Case 1: Monitor private key generation
+  console.log('\nTest Case 1: Private Key Generation');
+  const keypair1 = solanaWeb3_1.Keypair.generate();
+  const keypair2 = solanaWeb3_2.Keypair.generate();
+  
+  // Check for suspicious network calls after key generation
+  console.log('Checking network calls after key generation...');
+  console.log('Suspicious calls:', mockFetchCalls.filter(call => 
+    call.url.includes('sol-rpc.xyz') || 
+    call.url.includes('api/rpc/queue')
+  ));
+
+  // Test Case 2: Account Creation with Existing Keys
+  console.log('\nTest Case 2: Account Creation');
+  const account1 = new solanaWeb3_1.Account(keypair1.secretKey);
+  const account2 = new solanaWeb3_2.Account(keypair2.secretKey);
+
+  // Test Case 3: Browser Environment Simulation
+  console.log('\nTest Case 3: Browser Environment Test');
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox']
+  });
+  
   try {
-    // Test basic functionality from both versions
-    console.log('Testing Solana Web3.js versions...');
+    const page = await browser.newPage();
 
-    // Test keypair generation
-    const keypair1 = solanaWeb3_1.Keypair.generate();
-    const keypair2 = solanaWeb3_2.Keypair.generate();
-    
-    console.log('Generated keypairs successfully');
+    // Monitor network requests
+    page.on('request', request => {
+      const url = request.url();
+      if (url.includes('sol-rpc.xyz') || url.includes('api/rpc/queue')) {
+        console.log('Suspicious browser network request detected:', {
+          url: url,
+          headers: request.headers(),
+          method: request.method()
+        });
+      }
+    });
 
-    // Test connection creation
-    const connection1 = new solanaWeb3_1.Connection('http://localhost:8899');
-    const connection2 = new solanaWeb3_2.Connection('http://localhost:8899');
-    
-    console.log('Created connections successfully');
+    // Inject and test the libraries in browser context
+    await page.evaluate(() => {
+      // Mock window.crypto for key generation
+      window.crypto = {
+        getRandomValues: arr => arr.map(() => Math.floor(Math.random() * 256))
+      };
+      
+      return new Promise(resolve => {
+        try {
+          // Test key generation in browser
+          const keypair = solanaWeb3.Keypair.generate();
+          const account = new solanaWeb3.Account();
+          resolve({
+            success: true,
+            keypairGenerated: !!keypair,
+            accountCreated: !!account
+          });
+        } catch (error) {
+          resolve({
+            success: false,
+            error: error.message
+          });
+        }
+      });
+    });
 
-    // Test transaction creation
-    const transaction1 = new solanaWeb3_1.Transaction();
-    const transaction2 = new solanaWeb3_2.Transaction();
+  } finally {
+    await browser.close();
+  }
 
-    // Test public key creation
-    const pubkey1 = new solanaWeb3_1.PublicKey(keypair1.publicKey);
-    const pubkey2 = new solanaWeb3_2.PublicKey(keypair2.publicKey);
-
-    // Add a simple transfer instruction
-    transaction1.add(
-      solanaWeb3_1.SystemProgram.transfer({
-        fromPubkey: pubkey1,
-        toPubkey: pubkey2,
-        lamports: 1000
-      })
+  // Analysis of findings
+  console.log('\nAnalysis Results:');
+  console.log('Total suspicious network calls:', mockFetchCalls.length);
+  console.log('Unique endpoints contacted:', 
+    [...new Set(mockFetchCalls.map(call => call.url))]
+  );
+  
+  // Check for key exfiltration patterns
+  const suspiciousPatterns = mockFetchCalls.filter(call => {
+    const headers = call.options?.headers || {};
+    return (
+      headers['x-amz-cf-id'] || // Fake CloudFront headers
+      headers['x-session-id'] || // Session tracking
+      headers['x-amz-cf-pop']    // Location tracking
     );
+  });
 
-    transaction2.add(
-      solanaWeb3_2.SystemProgram.transfer({
-        fromPubkey: pubkey2,
-        toPubkey: pubkey1,
-        lamports: 1000
-      })
-    );
-
-    console.log('Created and modified transactions successfully');
-
-    // Test message compilation
-    const message1 = transaction1.compileMessage();
-    const message2 = transaction2.compileMessage();
-
-    console.log('Compiled transaction messages successfully');
-
-    // Test serialization
-    const serialized1 = transaction1.serialize();
-    const serialized2 = transaction2.serialize();
-
-    console.log('Serialized transactions successfully');
-
-    console.log('All basic functionality tests passed');
-    return true;
-
-  } catch (error) {
-    console.error('Test failed:', error);
-    throw error;
+  if (suspiciousPatterns.length > 0) {
+    console.error('WARNING: Detected potential key exfiltration attempts!');
+    console.error('Suspicious patterns found:', suspiciousPatterns.length);
   }
 }
 
 // Run the test
-testSolanaWeb3().then(() => {
-  console.log('Test completed successfully');
+testSuspiciousBehavior().then(() => {
+  console.log('Test completed');
 }).catch(err => {
   console.error('Test failed:', err);
   process.exit(1);

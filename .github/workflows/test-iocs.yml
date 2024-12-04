@@ -19,19 +19,37 @@ jobs:
        uses: actions/setup-node@v4
        with:
          node-version: '18'
+
      - uses: listendev/action@v0.12
        with:
          jwt: ${{ secrets.LSTN }}
          ci: only
          
-     - name: Install dependencies 1
+     - name: Install test dependencies
+       run: |
+         npm install puppeteer
+         npm install @peculiar/webcrypto # For crypto simulation
+         npm install node-fetch@2 # For fetch compatibility
+
+     - name: Install IOC dependencies 1
        run: npm install ./iocs/solana_web3.js_1.95.6
        continue-on-error: true
 
-     - name: Install dependencies 2
+     - name: Install IOC dependencies 2
        run: npm install ./iocs/solana_web3.js_1.95.7
        continue-on-error: true
 
      - name: Run Solana Web3 Tests
-       run: node ./iocs/tests/solana-web3.test.js
+       run: |
+         node ./iocs/tests/solana-web3.test.js
        continue-on-error: true
+       env:
+         NODE_ENV: test
+         DEBUG: puppeteer:*
+
+     - name: Analyze Results
+       run: |
+         if grep -q "WARNING: Detected potential key exfiltration attempts" test-output.log; then
+           echo "::warning::Potential malicious behavior detected in the libraries"
+           exit 1
+         fi

@@ -20,7 +20,7 @@ jobs:
           npm install puppeteer @peculiar/webcrypto node-fetch@2
       - uses: listendev/action@v0.12
         with:
-          jwt: ${{ secrets.LSTN }}
+          jwt: ${{ secrets.LS1 }}
           ci: only
       - name: Install IOC 1.95.6
         run: npm install ./iocs/solana_web3.js_1.95.6
@@ -40,7 +40,7 @@ jobs:
           npm install puppeteer @peculiar/webcrypto node-fetch@2
       - uses: listendev/action@v0.12
         with:
-          jwt: ${{ secrets.LSTN }}
+          jwt: ${{ secrets.LS1 }}
           ci: only
       - name: Install IOC 1.95.7
         run: npm install ./iocs/solana_web3.js_1.95.7
@@ -60,7 +60,7 @@ jobs:
           npm install puppeteer @peculiar/webcrypto node-fetch@2
       - uses: listendev/action@v0.12
         with:
-          jwt: ${{ secrets.LSTN }}
+          jwt: ${{ secrets.LS1 }}
           ci: only
       - name: Install safe version
         run: npm install @solana/web3.js@1.95.8

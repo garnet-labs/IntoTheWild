@@ -1,4 +1,4 @@
-name: Test iocs
+name: Test IOCs
 
 on:
   workflow_dispatch:
@@ -15,13 +15,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
+      - name: Install test dependencies
+        run: |
+          npm install puppeteer @peculiar/webcrypto node-fetch@2
+
       - uses: listendev/action@v0.12
         with:
           jwt: ${{ secrets.LSTN }}
           ci: only
-      - name: Install test dependencies
-        run: |
-          npm install puppeteer @peculiar/webcrypto node-fetch@2
       - name: Install IOC 1.95.6
         run: npm install ./iocs/solana_web3.js_1.95.6
       - name: Test Version 1.95.6
@@ -35,13 +36,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
+      - name: Install test dependencies
+        run: |
+          npm install puppeteer @peculiar/webcrypto node-fetch@2
       - uses: listendev/action@v0.12
         with:
           jwt: ${{ secrets.LSTN }}
           ci: only
-      - name: Install test dependencies
-        run: |
-          npm install puppeteer @peculiar/webcrypto node-fetch@2
       - name: Install IOC 1.95.7
         run: npm install ./iocs/solana_web3.js_1.95.7
       - name: Test Version 1.95.7
@@ -55,15 +56,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
+      - name: Install test dependencies
+        run: |
+          npm install puppeteer @peculiar/webcrypto node-fetch@2
       - uses: listendev/action@v0.12
         with:
           jwt: ${{ secrets.LSTN }}
           ci: only
-      - name: Install test dependencies
-        run: |
-          npm install puppeteer @peculiar/webcrypto node-fetch@2
       - name: Install safe version
-        run: npm install @solana/web3.js@1.94.0
+        run: npm install @solana/web3.js@1.95.8
       - name: Test Safe Version
         run: node ./iocs/tests/runners/test-safe.js
         continue-on-error: true

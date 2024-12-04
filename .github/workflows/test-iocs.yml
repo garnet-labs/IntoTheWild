@@ -15,17 +15,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Install dependencies
+      - uses: listendev/action@v0.12
+        with:
+          jwt: ${{ secrets.LSTN }}
+          ci: only
+      - name: Install test dependencies
         run: |
           npm install puppeteer @peculiar/webcrypto node-fetch@2
-          npm install ./iocs/solana_web3.js_1.95.6
-      - name: Run Tests
+      - name: Install IOC 1.95.6
+        run: npm install ./iocs/solana_web3.js_1.95.6
+      - name: Test Version 1.95.6
         run: node ./iocs/tests/runners/test-1.95.6.js
-      - name: Upload Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results-1.95.6
-          path: test-results-1.95.6.json
+        continue-on-error: true
 
   test-1-95-7:
     runs-on: ubuntu-latest
@@ -34,17 +35,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Install dependencies
+      - uses: listendev/action@v0.12
+        with:
+          jwt: ${{ secrets.LSTN }}
+          ci: only
+      - name: Install test dependencies
         run: |
           npm install puppeteer @peculiar/webcrypto node-fetch@2
-          npm install ./iocs/solana_web3.js_1.95.7
-      - name: Run Tests
+      - name: Install IOC 1.95.7
+        run: npm install ./iocs/solana_web3.js_1.95.7
+      - name: Test Version 1.95.7
         run: node ./iocs/tests/runners/test-1.95.7.js
-      - name: Upload Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results-1.95.7
-          path: test-results-1.95.7.json
+        continue-on-error: true
 
   test-safe-version:
     runs-on: ubuntu-latest
@@ -53,34 +55,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Install dependencies
+      - uses: listendev/action@v0.12
+        with:
+          jwt: ${{ secrets.LSTN }}
+          ci: only
+      - name: Install test dependencies
         run: |
           npm install puppeteer @peculiar/webcrypto node-fetch@2
-          npm install @solana/web3.js@1.94.0
-      - name: Run Tests
+      - name: Install safe version
+        run: npm install @solana/web3.js@1.94.0
+      - name: Test Safe Version
         run: node ./iocs/tests/runners/test-safe.js
-      - name: Upload Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results-safe
-          path: test-results-safe.json
+        continue-on-error: true
 
-  analyze-results:
-    needs: [test-1-95-6, test-1-95-7, test-safe-version]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download all artifacts
-        uses: actions/download-artifact@v3
-      - name: Generate comparison report
-        run: |
-          echo "### Test Results Summary" >> $GITHUB_STEP_SUMMARY
-          echo "#### Wallet Operations" >> $GITHUB_STEP_SUMMARY
-          echo "| Version | Success | Suspicious Patterns |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------|---------|-------------------|" >> $GITHUB_STEP_SUMMARY
-          for version in "1.95.6" "1.95.7" "safe"; do
-            result=$(cat test-results-$version/test-results-$version.json)
-            success=$(echo $result | jq -r '.walletOperations.success')
-            patterns=$(echo $result | jq -r '.walletOperations.patterns | length')
-            echo "| $version | $success | $patterns |" >> $GITHUB_STEP_SUMMARY
-          done
+

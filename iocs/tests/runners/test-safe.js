@@ -2,6 +2,10 @@ const { runTest } = require('../lib/test-harness');
 
 async function main() {
     console.log("Testing @solana/web3.js v1.95.8 (safe version)...");
+    
+    // First inject the library into global scope
+    global.solana = require('@solana/web3.js');
+    
     const results = await runTest();
     
     if (results.errors.length > 0) {

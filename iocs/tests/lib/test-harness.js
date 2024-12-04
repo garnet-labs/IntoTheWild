@@ -9,22 +9,20 @@ async function runTest() {
     const results = {
         keyGeneration: {
             suspiciousPatterns: 0,
-            success: false,
             networkCalls: [],
-            headers: []
+            success: false
         },
         accountCreation: {
             suspiciousPatterns: 0,
-            success: false,
             networkCalls: [],
-            headers: []
+            success: false
         },
         errors: []
     };
 
     try {
         const page = await browser.newPage();
-
+        
         // Monitor all network requests
         await page.setRequestInterception(true);
         
@@ -54,8 +52,9 @@ async function runTest() {
 
             for (const header of suspiciousHeaders) {
                 if (headers[header]) {
-                    results[phase].headers.push({
-                        name: header,
+                    results[phase].networkCalls.push({
+                        type: 'suspicious_header',
+                        header: header,
                         value: headers[header]
                     });
                     results[phase].suspiciousPatterns++;
@@ -65,34 +64,7 @@ async function runTest() {
             request.continue();
         });
 
-        // Inject test wallet application code
-        await page.evaluate(() => {
-            // Mock wallet application environment
-            window.walletApp = {
-                async createWallet() {
-                    const { Account, Keypair } = window.solanaWeb3;
-                    
-                    // Simulate real wallet creation flow
-                    const account = new Account();
-                    console.log("Account created:", account._publicKey);
-                    
-                    const keypair = Keypair.generate();
-                    console.log("Keypair generated:", keypair.publicKey.toBase58());
-                    
-                    return {
-                        account,
-                        keypair
-                    };
-                }
-            };
-        });
-
-        // Inject the web3.js library
-        await page.addScriptTag({
-            path: require.resolve('@solana/web3.js')
-        });
-
-        // Execute wallet application test scenario
+        // Test scenarios that might trigger suspicious behavior
         const testResults = await page.evaluate(async () => {
             const results = {
                 keyGeneration: { success: false, calls: [] },
@@ -101,19 +73,19 @@ async function runTest() {
             };
 
             try {
-                // Test Account creation first (as a wallet would)
-                results.currentPhase = 'accountCreation';
-                const account = new window.solanaWeb3.Account();
-                results.accountCreation.success = !!account._publicKey;
-
-                // Test Keypair generation (common wallet operation)
+                // Test Keypair generation
                 results.currentPhase = 'keyGeneration';
-                const keypair = window.solanaWeb3.Keypair.generate();
-                results.keyGeneration.success = !!keypair.publicKey;
+                const keypair = solana.Keypair.generate();
+                results.keyGeneration.success = true;
 
-                // Additional wallet operations that might trigger suspicious behavior
+                // Test Account creation (known to potentially trigger suspicious behavior)
+                results.currentPhase = 'accountCreation';
+                const account = new solana.Account();
+                results.accountCreation.success = true;
+
+                // Test fromSecretKey (another potential trigger)
                 const secretKey = new Uint8Array(64).fill(1);
-                window.solanaWeb3.Keypair.fromSecretKey(secretKey);
+                const keypairFromSecret = solana.Keypair.fromSecretKey(secretKey);
 
             } catch (error) {
                 results.errors.push(error.message);
@@ -122,7 +94,7 @@ async function runTest() {
             return results;
         });
 
-        // Merge results
+        // Merge browser test results
         Object.assign(results.keyGeneration, testResults.keyGeneration);
         Object.assign(results.accountCreation, testResults.accountCreation);
         results.errors.push(...testResults.errors);

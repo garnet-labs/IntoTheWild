@@ -12,6 +12,22 @@ class TestHarness {
     };
   }
 
+  async runTests(web3js) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto('http://localhost:3000');
+    await page.evaluate((version) => {
+      window.version = version;
+    }, this.version);
+
+    this.mockFetch();
+    await this.testWalletOperations(web3js, page);
+    await this.testTransactionOperations(web3js, page);
+    await this.testDurableOperations(web3js, page);
+    await browser.close();
+    return this.results;
+  }
+
   mockFetch() {
     global.fetch = async (url, options) => {
       this.networkCalls.push({url, options, timestamp: Date.now()});
@@ -21,32 +37,24 @@ class TestHarness {
     };
   }
 
-  async runTests(web3js) {
-    this.mockFetch();
-    await this.testWalletOperations(web3js);
-    await this.testTransactionOperations(web3js);
-    await this.testDurableOperations(web3js);
-    return this.results;
-  }
-
-  async testWalletOperations(web3js) {
+  async testWalletOperations(web3js, page) {
     console.log(`Testing Wallet Operations - ${this.version}`);
     const startCalls = this.networkCalls.length;
 
     try {
       // Test wallet creation and key handling
-      const wallet = web3js.Keypair.generate();
-      const connection = new web3js.Connection(web3js.clusterApiUrl('devnet'));
+      const wallet = await page.evaluate(() => window.web3.Keypair.generate());
+      const connection = await page.evaluate(() => new window.web3.Connection(window.web3.clusterApiUrl('devnet')));
       
       // Test public key operations
-      const pubKey = new web3js.PublicKey(wallet.publicKey.toString());
-      await connection.getBalance(pubKey);
+      const pubKey = await page.evaluate(() => new window.web3.PublicKey(wallet.publicKey.toString()));
+      await page.evaluate((pubKey) => window.connection.getBalance(pubKey), pubKey);
 
       // Test PDA derivation
-      const [pda] = await web3js.PublicKey.findProgramAddress(
+      const [pda] = await page.evaluate(() => window.web3.PublicKey.findProgramAddress(
         [Buffer.from("test-seed")],
         pubKey
-      );
+      ));
 
       this.results.walletOperations = {
         success: true,
@@ -59,32 +67,32 @@ class TestHarness {
     }
   }
 
-  async testTransactionOperations(web3js) {
+  async testTransactionOperations(web3js, page) {
     console.log(`Testing Transaction Operations - ${this.version}`);
     const startCalls = this.networkCalls.length;
 
     try {
-      const connection = new web3js.Connection(web3js.clusterApiUrl('devnet'));
-      const payer = web3js.Keypair.generate();
-      const recipient = web3js.Keypair.generate();
+      const connection = await page.evaluate(() => new window.web3.Connection(window.web3.clusterApiUrl('devnet')));
+      const payer = await page.evaluate(() => window.web3.Keypair.generate());
+      const recipient = await page.evaluate(() => window.web3.Keypair.generate());
 
       // Create versioned transaction (new format)
-      const latestBlockhash = await connection.getLatestBlockhash();
+      const latestBlockhash = await page.evaluate(() => window.connection.getLatestBlockhash());
       
-      const transferInstruction = web3js.SystemProgram.transfer({
+      const transferInstruction = await page.evaluate(() => window.web3.SystemProgram.transfer({
         fromPubkey: payer.publicKey,
         toPubkey: recipient.publicKey,
         lamports: 1000,
-      });
+      }));
 
-      const messageV0 = new web3js.TransactionMessage({
+      const messageV0 = await page.evaluate(() => new window.web3.TransactionMessage({
         payerKey: payer.publicKey,
         recentBlockhash: latestBlockhash.blockhash,
         instructions: [transferInstruction],
-      }).compileToV0Message();
+      }).compileToV0Message());
 
-      const transaction = new web3js.VersionedTransaction(messageV0);
-      transaction.sign([payer]);
+      const transaction = await page.evaluate(() => new window.web3.VersionedTransaction(messageV0));
+      await page.evaluate(() => transaction.sign([payer]));
 
       this.results.transactionOperations = {
         success: true,
@@ -97,28 +105,28 @@ class TestHarness {
     }
   }
 
-  async testDurableOperations(web3js) {
+  async testDurableOperations(web3js, page) {
     console.log(`Testing Durable Operations - ${this.version}`);
     const startCalls = this.networkCalls.length;
 
     try {
-      const connection = new web3js.Connection(web3js.clusterApiUrl('devnet'));
-      const wallet = web3js.Keypair.generate();
-      const nonceAccount = web3js.Keypair.generate();
+      const connection = await page.evaluate(() => new window.web3.Connection(window.web3.clusterApiUrl('devnet')));
+      const wallet = await page.evaluate(() => window.web3.Keypair.generate());
+      const nonceAccount = await page.evaluate(() => window.web3.Keypair.generate());
 
       // Create nonce account instruction
-      const createNonceAccountIx = web3js.SystemProgram.createNonceAccount({
+      const createNonceAccountIx = await page.evaluate(() => window.web3.SystemProgram.createNonceAccount({
         fromPubkey: wallet.publicKey,
         noncePubkey: nonceAccount.publicKey,
         authorizedPubkey: wallet.publicKey,
         lamports: await connection.getMinimumBalanceForRentExemption(web3js.NONCE_ACCOUNT_LENGTH),
-      });
+      }));
 
       // Create durable transaction
-      const advanceNonceIx = web3js.SystemProgram.nonceAdvance({
+      const advanceNonceIx = await page.evaluate(() => window.web3.SystemProgram.nonceAdvance({
         noncePubkey: nonceAccount.publicKey,
         authorizedPubkey: wallet.publicKey
-      });
+      }));
 
       this.results.durableOperations = {
         success: true,

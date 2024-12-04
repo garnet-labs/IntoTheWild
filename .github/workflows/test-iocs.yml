@@ -32,55 +32,6 @@ jobs:
        run: npm install ./iocs/solana_web3.js_1.95.7
        continue-on-error: true
 
-     - name: Install Puppeteer
-       run: npm install puppeteer
-
-     - name: Create test script
-       run: |
-         cat > browser-test.js << 'EOL'
-         const puppeteer = require('puppeteer');
-
-         (async () => {
-           console.log('Starting browser test...');
-           const browser = await puppeteer.launch();
-           const page = await browser.newPage();
-           
-           // Inject the Solana packages
-           await page.evaluate(() => {
-             const script1 = document.createElement('script');
-             script1.src = './iocs/solana_web3.js_1.95.6/lib/index.browser.cjs.js';
-             document.head.appendChild(script1);
-             
-             const script2 = document.createElement('script');
-             script2.src = './iocs/solana_web3.js_1.95.7/lib/index.browser.cjs.js';
-             document.head.appendChild(script2);
-           });
-
-           // Wait a bit for scripts to load
-           await page.waitForTimeout(2000);
-
-           console.log('Libraries loaded in browser environment');
-           
-           // Get page metrics
-           const metrics = await page.metrics();
-           console.log('Page Metrics:', metrics);
-
-           await browser.close();
-           console.log('Browser test completed');
-         })().catch(console.error);
-         EOL
-
-     - name: Run browser simulation
-       run: node browser-test.js
-       continue-on-error: true
-
-     - name: Simulate test
-       run: |
-         node -e "const solanaWeb3_1 = require('./iocs/solana_web3.js_1.95.6/lib/index.browser.cjs.js');
-         const solanaWeb3_2 = require('./iocs/solana_web3.js_1.95.7/lib/index.browser.cjs.js');
-         console.log('Loaded solana_web3.js_1.95.6 and solana_web3.js_1.95.7 successfully.');
-         console.log('Starting a simple browser app...');
-         // Simulate starting a simple browser app with the loaded modules
-         // This is a placeholder for actual app initialization logic
-         console.log('Simple browser app started successfully.');"
+     - name: Run Solana Web3 Tests
+       run: node ./iocs/tests/solana-web3.test.js
        continue-on-error: true

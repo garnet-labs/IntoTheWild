@@ -9,9 +9,18 @@ async function main() {
         process.exit(1);
     }
 
-    console.log("Test results:", results);
+    console.log("Test results:", JSON.stringify(results, null, 2));
     
-    if (!results.keyGeneration || !results.accountCreation) {
+    // Check for success and suspicious patterns
+    const hasFailures = !results.keyGeneration.success || 
+                       !results.accountCreation.success || 
+                       !results.browserTest.success;
+                       
+    const hasSuspiciousPatterns = results.keyGeneration.suspiciousPatterns > 0 || 
+                                 results.accountCreation.suspiciousPatterns > 0 ||
+                                 results.browserTest.suspiciousPatterns > 0;
+
+    if (hasFailures || hasSuspiciousPatterns) {
         process.exit(1);
     }
 }

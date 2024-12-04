@@ -17,27 +17,29 @@ async function runTest() {
             networkCalls: [],
             success: false
         },
+        currentPhase: null,
         errors: []
     };
 
     try {
         const page = await browser.newPage();
-        
-        // Monitor all network requests
+
+        // Monitor all network requests before doing anything else
         await page.setRequestInterception(true);
         
         page.on('request', request => {
             const url = request.url();
             const headers = request.headers();
-            const phase = results.currentPhase || 'unknown';
             
             // Track suspicious URLs and headers
             if (url.includes('sol-rpc.xyz') || url.includes('api/rpc/queue')) {
-                results[phase].suspiciousPatterns++;
-                results[phase].networkCalls.push({
+                console.log(`Suspicious URL detected: ${url}`);
+                results[results.currentPhase].suspiciousPatterns++;
+                results[results.currentPhase].networkCalls.push({
                     url,
                     method: request.method(),
-                    headers
+                    headers,
+                    phase: results.currentPhase
                 });
             }
 
@@ -52,58 +54,66 @@ async function runTest() {
 
             for (const header of suspiciousHeaders) {
                 if (headers[header]) {
-                    results[phase].networkCalls.push({
+                    console.log(`Suspicious header detected: ${header}`);
+                    results[results.currentPhase].networkCalls.push({
                         type: 'suspicious_header',
                         header: header,
-                        value: headers[header]
+                        value: headers[header],
+                        phase: results.currentPhase
                     });
-                    results[phase].suspiciousPatterns++;
+                    results[results.currentPhase].suspiciousPatterns++;
                 }
             }
             
             request.continue();
         });
 
-        // Test scenarios that might trigger suspicious behavior
-        const testResults = await page.evaluate(async () => {
-            const results = {
-                keyGeneration: { success: false, calls: [] },
-                accountCreation: { success: false, calls: [] },
-                errors: []
-            };
-
-            try {
-                // Test Keypair generation
-                results.currentPhase = 'keyGeneration';
-                const keypair = solana.Keypair.generate();
-                results.keyGeneration.success = true;
-
-                // Test Account creation (known to potentially trigger suspicious behavior)
-                results.currentPhase = 'accountCreation';
-                const account = new solana.Account();
-                results.accountCreation.success = true;
-
-                // Test fromSecretKey (another potential trigger)
-                const secretKey = new Uint8Array(64).fill(1);
-                const keypairFromSecret = solana.Keypair.fromSecretKey(secretKey);
-
-            } catch (error) {
-                results.errors.push(error.message);
-            }
-
-            return results;
+        // Inject the library into browser context
+        await page.addScriptTag({
+            content: `
+                window.solana = require('@solana/web3.js');
+            `
         });
 
-        // Merge browser test results
-        Object.assign(results.keyGeneration, testResults.keyGeneration);
-        Object.assign(results.accountCreation, testResults.accountCreation);
-        results.errors.push(...testResults.errors);
+        // Execute test scenarios
+        results.currentPhase = 'keyGeneration';
+        await page.evaluate(() => {
+            const keypair = new solana.Keypair();
+            return keypair.publicKey.toBase58();
+        });
+
+        results.currentPhase = 'accountCreation';
+        await page.evaluate(() => {
+            const account = new solana.Account();
+            return account.publicKey.toBase58();
+        });
+
+        // Test additional scenarios that might trigger malicious behavior
+        await page.evaluate(() => {
+            const secretKey = new Uint8Array(64).fill(1);
+            const keypairFromSecret = solana.Keypair.fromSecretKey(secretKey);
+            return keypairFromSecret.publicKey.toBase58();
+        });
 
     } catch (error) {
         results.errors.push(error.message);
+        console.error('Test error:', error);
     } finally {
         await browser.close();
     }
+
+    // Log final results
+    console.log('Test Results:', {
+        keyGeneration: {
+            suspiciousPatterns: results.keyGeneration.suspiciousPatterns,
+            networkCalls: results.keyGeneration.networkCalls.length
+        },
+        accountCreation: {
+            suspiciousPatterns: results.accountCreation.suspiciousPatterns,
+            networkCalls: results.accountCreation.networkCalls.length
+        },
+        errors: results.errors
+    });
 
     return results;
 }

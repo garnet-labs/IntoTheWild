@@ -1,9 +1,22 @@
-const TestHarness = require('../lib/test-harness');
-const web3js = require('../../solana_web3.js_1.95.6/lib/index.browser.cjs.js');
+const { runTest } = require('../lib/test-harness');
 
-async function runTest() {
-  const harness = new TestHarness('1.95.6');
-  const results = await harness.runTests(web3js);
+async function main() {
+    console.log("Testing @solana/web3.js v1.95.6...");
+    const results = await runTest();
+    
+    if (results.errors.length > 0) {
+        console.error("Test errors:", results.errors);
+        process.exit(1);
+    }
+
+    console.log("Test results:", results);
+    
+    if (!results.keyGeneration || !results.accountCreation) {
+        process.exit(1);
+    }
 }
 
-runTest().catch(console.error); 
+main().catch(err => {
+    console.error(err);
+    process.exit(1);
+}); 

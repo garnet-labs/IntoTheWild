@@ -1,42 +1,78 @@
-const { Keypair, Connection, SystemProgram, Transaction, PublicKey } = require('@solana/web3.js');
 const puppeteer = require('puppeteer');
-const { webcrypto } = require('@peculiar/webcrypto');
-const fetch = require('node-fetch');
-
-// Mock browser crypto API
-global.crypto = webcrypto;
+const path = require('path');
 
 async function runTest() {
+    const browser = await puppeteer.launch({
+        headless: 'new',
+        args: ['--no-sandbox']
+    });
+
     const results = {
         keyGeneration: false,
-        accountCreation: false,
+        transactionCreation: false,
+        walletConnection: false,
         errors: []
     };
 
     try {
-        // Test 1: Key Generation
-        const keypair = Keypair.generate();
-        results.keyGeneration = keypair.publicKey && keypair.secretKey.length === 64;
+        const page = await browser.newPage();
 
-        // Test 2: Account Creation
-        const connection = new Connection("http://localhost:8899", "confirmed");
-        
-        // Create transfer transaction
-        const transaction = new Transaction().add(
-            SystemProgram.createAccount({
-                fromPubkey: keypair.publicKey,
-                newAccountPubkey: Keypair.generate().publicKey,
-                lamports: 1000000,
-                space: 0,
-                programId: SystemProgram.programId,
-            })
-        );
+        // Inject the web3.js library
+        await page.addScriptTag({
+            path: require.resolve('@solana/web3.js')
+        });
 
-        // Verify transaction structure
-        results.accountCreation = transaction.instructions.length === 1;
+        // Execute real-world browser scenario
+        const testResults = await page.evaluate(async () => {
+            const testResults = {
+                keyGeneration: false,
+                transactionCreation: false,
+                walletConnection: false,
+                errors: []
+            };
+
+            try {
+                // Simulate wallet connection like Phantom would do
+                const connection = new solanaWeb3.Connection(
+                    "https://api.mainnet-beta.solana.com",
+                    'confirmed'
+                );
+
+                // Test key generation (common wallet operation)
+                const wallet = solanaWeb3.Keypair.generate();
+                testResults.keyGeneration = wallet.publicKey && wallet.secretKey.length === 64;
+
+                // Test transaction building (common dApp operation)
+                const transaction = new solanaWeb3.Transaction().add(
+                    solanaWeb3.SystemProgram.transfer({
+                        fromPubkey: wallet.publicKey,
+                        toPubkey: solanaWeb3.Keypair.generate().publicKey,
+                        lamports: 1000000,
+                    })
+                );
+
+                testResults.transactionCreation = transaction.instructions.length === 1;
+
+                // Test connection & network interaction
+                const balance = await connection.getBalance(wallet.publicKey);
+                testResults.walletConnection = typeof balance === 'number';
+
+            } catch (error) {
+                testResults.errors.push(error.message);
+            }
+
+            return testResults;
+        });
+
+        results.keyGeneration = testResults.keyGeneration;
+        results.transactionCreation = testResults.transactionCreation;
+        results.walletConnection = testResults.walletConnection;
+        results.errors = testResults.errors;
 
     } catch (error) {
         results.errors.push(error.message);
+    } finally {
+        await browser.close();
     }
 
     return results;

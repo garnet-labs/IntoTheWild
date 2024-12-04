@@ -28,8 +28,9 @@ jobs:
      - name: Install test dependencies
        run: |
          npm install puppeteer
-         npm install @peculiar/webcrypto # For crypto simulation
-         npm install node-fetch@2 # For fetch compatibility
+         npm install @peculiar/webcrypto
+         npm install node-fetch@2
+         npm install @solana/web3.js@1.94.0  # Known good version for baseline
 
      - name: Install IOC dependencies 1
        run: npm install ./iocs/solana_web3.js_1.95.6
@@ -39,17 +40,18 @@ jobs:
        run: npm install ./iocs/solana_web3.js_1.95.7
        continue-on-error: true
 
-     - name: Run Solana Web3 Tests
-       run: |
-         node ./iocs/tests/solana-web3.test.js
+     - name: Run Comparison Tests
+       run: node ./iocs/tests/solana-web3.test.js
        continue-on-error: true
-       env:
-         NODE_ENV: test
-         DEBUG: puppeteer:*
 
-     - name: Analyze Results
+     - name: Generate Report
+       if: always()
        run: |
-         if grep -q "WARNING: Detected potential key exfiltration attempts" test-output.log; then
-           echo "::warning::Potential malicious behavior detected in the libraries"
+         echo "### Test Results" >> $GITHUB_STEP_SUMMARY
+         cat test-output.log >> $GITHUB_STEP_SUMMARY
+         
+         if grep -q "SECURITY WARNINGS" test-output.log; then
+           echo "::warning::Potential malicious behavior detected"
+           echo "::error::Security anomalies found in tested versions"
            exit 1
          fi

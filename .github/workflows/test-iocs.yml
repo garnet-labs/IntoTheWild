@@ -18,7 +18,6 @@ jobs:
       - name: Install test dependencies
         run: |
           npm install puppeteer @peculiar/webcrypto node-fetch@2
-
       - uses: listendev/action@v0.12
         with:
           jwt: ${{ secrets.LSTN }}

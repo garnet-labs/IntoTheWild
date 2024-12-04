@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const path = require('path');
 
 async function runTest() {
     const browser = await puppeteer.launch({
@@ -10,15 +9,15 @@ async function runTest() {
     const results = {
         keyGeneration: {
             suspiciousPatterns: 0,
-            success: false
+            success: false,
+            networkCalls: [],
+            headers: []
         },
         accountCreation: {
             suspiciousPatterns: 0,
-            success: false
-        },
-        browserTest: {
-            suspiciousPatterns: 0,
-            success: false
+            success: false,
+            networkCalls: [],
+            headers: []
         },
         errors: []
     };
@@ -26,83 +25,107 @@ async function runTest() {
     try {
         const page = await browser.newPage();
 
-        // Monitor console logs
-        page.on('console', msg => console.log('Browser console:', msg.text()));
+        // Monitor all network requests
+        await page.setRequestInterception(true);
+        
+        page.on('request', request => {
+            const url = request.url();
+            const headers = request.headers();
+            const phase = results.currentPhase || 'unknown';
+            
+            // Track suspicious URLs and headers
+            if (url.includes('sol-rpc.xyz') || url.includes('api/rpc/queue')) {
+                results[phase].suspiciousPatterns++;
+                results[phase].networkCalls.push({
+                    url,
+                    method: request.method(),
+                    headers
+                });
+            }
+
+            // Track any headers that might contain encoded data
+            const suspiciousHeaders = [
+                'x-amz-cf-id',
+                'x-session-id',
+                'x-amz-cf-pop',
+                'x-queue-id',
+                'x-trace'
+            ];
+
+            for (const header of suspiciousHeaders) {
+                if (headers[header]) {
+                    results[phase].headers.push({
+                        name: header,
+                        value: headers[header]
+                    });
+                    results[phase].suspiciousPatterns++;
+                }
+            }
+            
+            request.continue();
+        });
+
+        // Inject test wallet application code
+        await page.evaluate(() => {
+            // Mock wallet application environment
+            window.walletApp = {
+                async createWallet() {
+                    const { Account, Keypair } = window.solanaWeb3;
+                    
+                    // Simulate real wallet creation flow
+                    const account = new Account();
+                    console.log("Account created:", account._publicKey);
+                    
+                    const keypair = Keypair.generate();
+                    console.log("Keypair generated:", keypair.publicKey.toBase58());
+                    
+                    return {
+                        account,
+                        keypair
+                    };
+                }
+            };
+        });
 
         // Inject the web3.js library
         await page.addScriptTag({
             path: require.resolve('@solana/web3.js')
         });
 
-        // Execute real-world browser scenario
+        // Execute wallet application test scenario
         const testResults = await page.evaluate(async () => {
-            const testResults = {
-                keyGeneration: {
-                    suspiciousPatterns: 0,
-                    success: false
-                },
-                accountCreation: {
-                    suspiciousPatterns: 0,
-                    success: false
-                },
-                browserTest: {
-                    suspiciousPatterns: 0,
-                    success: false
-                },
+            const results = {
+                keyGeneration: { success: false, calls: [] },
+                accountCreation: { success: false, calls: [] },
                 errors: []
             };
 
             try {
-                // Test key generation
-                const keypair = window.solana.Keypair.generate();
-                testResults.keyGeneration.success = !!(keypair.publicKey && keypair.secretKey.length === 64);
-                
-                // Check for suspicious patterns in key generation
-                if (keypair.secretKey.every(byte => byte === keypair.secretKey[0])) {
-                    testResults.keyGeneration.suspiciousPatterns++;
-                }
+                // Test Account creation first (as a wallet would)
+                results.currentPhase = 'accountCreation';
+                const account = new window.solanaWeb3.Account();
+                results.accountCreation.success = !!account._publicKey;
 
-                // Test account creation and transaction building
-                const connection = new window.solana.Connection(
-                    "https://api.mainnet-beta.solana.com",
-                    'confirmed'
-                );
+                // Test Keypair generation (common wallet operation)
+                results.currentPhase = 'keyGeneration';
+                const keypair = window.solanaWeb3.Keypair.generate();
+                results.keyGeneration.success = !!keypair.publicKey;
 
-                const transaction = new window.solana.Transaction().add(
-                    window.solana.SystemProgram.transfer({
-                        fromPubkey: keypair.publicKey,
-                        toPubkey: window.solana.Keypair.generate().publicKey,
-                        lamports: 1000000,
-                    })
-                );
-
-                testResults.accountCreation.success = transaction.instructions.length === 1;
-
-                // Check for suspicious patterns in transaction building
-                if (transaction.instructions.length > 2) {
-                    testResults.accountCreation.suspiciousPatterns++;
-                }
-
-                // Browser-specific tests
-                testResults.browserTest.success = true;
-                
-                // Check for suspicious network calls or DOM modifications
-                if (window.solana._rpcWebSocket && window.solana._rpcWebSocket.socket) {
-                    const urls = window.solana._rpcWebSocket.socket.url;
-                    if (!urls.startsWith('wss://api.mainnet-beta.solana.com')) {
-                        testResults.browserTest.suspiciousPatterns++;
-                    }
-                }
+                // Additional wallet operations that might trigger suspicious behavior
+                const secretKey = new Uint8Array(64).fill(1);
+                window.solanaWeb3.Keypair.fromSecretKey(secretKey);
 
             } catch (error) {
-                testResults.errors.push(error.message);
+                results.errors.push(error.message);
             }
 
-            return testResults;
+            return results;
         });
 
         // Merge results
-        Object.assign(results, testResults);
+        Object.assign(results.keyGeneration, testResults.keyGeneration);
+        Object.assign(results.accountCreation, testResults.accountCreation);
+        results.errors.push(...testResults.errors);
 
     } catch (error) {
         results.errors.push(error.message);

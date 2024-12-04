@@ -70,9 +70,13 @@ async function runTest() {
 
         // Inject the library into browser context
         await page.addScriptTag({
-            content: `
-                window.solana = require('@solana/web3.js');
-            `
+            path: require.resolve('@solana/web3.js'),
+            type: 'text/javascript'
+        });
+
+        // Make sure library is available in browser context
+        await page.evaluate(() => {
+            window.solana = window.solanaWeb3;
         });
 
         // Execute test scenarios

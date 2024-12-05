@@ -16,11 +16,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - uses: listendev/action@v0.13.0     
+    - uses: listendev/action@main
       with:
-        jwt: ${{ secrets.LS }}
-        ci: runtime
-
+        jwt: ${{ secrets.LS2 }}
+        runtime: only
+        eavesdrop_version: v1.0
 
     - name: Install dependencies
       run: npm install .

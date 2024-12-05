@@ -1,4 +1,4 @@
-name: Test v0.0
+name: Test v0.13
 
 on:
   workflow_dispatch:
@@ -14,13 +14,12 @@ jobs:
     steps:
 
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
-    - uses: listendev/action@v0.11   
+    - uses: listendev/action@v0.13.0     
       with:
         jwt: ${{ secrets.LS }}
-        ci: only
-        argus_version: v0.0
+        ci: runtime
 
 
     - name: Install dependencies

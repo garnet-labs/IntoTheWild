@@ -1,9 +1,8 @@
-const { Linter } = require('eslint');
+const { Linter } = require('./typescript_eslinter_eslint_2.2.9');
 
 class ExtendedLinter extends Linter {
     constructor() {
         super();
-        // Add any custom initialization
     }
 }
 

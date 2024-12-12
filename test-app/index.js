@@ -4,6 +4,9 @@ async function runTests() {
     try {
         console.log('Starting runtime test...');
         
+        // Initialize the linter
+        const linter = new eslinter.Linter();
+        
         // Test 1: Basic linting
         console.log('\nTest 1: Basic var usage detection');
         const testCode1 = `

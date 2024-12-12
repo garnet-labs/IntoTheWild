@@ -1,0 +1,14 @@
+{
+  "name": "test-app",
+  "version": "1.0.0",
+  "description": "Test application for runtime behavior",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node index.js"
+  },
+  "dependencies": {
+    "typescript_eslinter_eslint_2.2.9": "file:../iocs/typescript_eslinter_eslint_2.2.9",
+    "typescript_eslinter_prettier_1.2.2": "file:../iocs/typescript_eslinter_prettier_1.2.2"
+  }
+} 

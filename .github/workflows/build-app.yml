@@ -2,6 +2,8 @@ name: Build combined
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ "*" ]
   pull_request:
     branches: [ "*" ]
 
@@ -13,12 +15,15 @@ jobs:
      - name: Checkout repository
        uses: actions/checkout@v4
        
-     - uses: listendev/action@v0.12
+     - uses: listendev/action@v0.13.1
        with:
-         jwt: ${{ secrets.LS }}
-         ci: only
+         jwt: ${{ secrets.LSTN }}
+         runtime: only
 
-     - name: Install dependencies
+     - name: Install and simulate runtime
        run: |
-          npm install .
+          # Install and run test app
+          cd test-app
+          npm install
+          npm test
        continue-on-error: true

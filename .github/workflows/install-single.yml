@@ -24,8 +24,8 @@ jobs:
    
   
      - name: Install dependencies
-       run: 
+       run: |
         cd iocs 
-        npm install ./typescript_eslinter_eslint_2.2.9
-        npm install ./iocs/typescript_eslinter_prettier_1.2.2
+        npm install typescript_eslinter_eslint_2.2.9
+        npm install iocs/typescript_eslinter_prettier_1.2.2
        continue-on-error: true

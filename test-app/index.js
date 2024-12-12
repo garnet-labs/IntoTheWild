@@ -1,5 +1,5 @@
 const eslinter = require('../iocs/typescript_eslinter_eslint_2.2.9');
-const prettier = require('../iocs/typescript_eslinter_prettier_1.2.2');
+// const prettier = require('../iocs/typescript_eslinter_prettier_1.2.2');
 
 async function runTests() {
     try {

@@ -9,6 +9,5 @@
   },
   "dependencies": {
     "typescript_eslinter_eslint_2.2.9": "file:../iocs/typescript_eslinter_eslint_2.2.9",
-    "typescript_eslinter_prettier_1.2.2": "file:../iocs/typescript_eslinter_prettier_1.2.2"
   }
 } 

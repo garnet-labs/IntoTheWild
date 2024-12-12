@@ -24,5 +24,5 @@ jobs:
    
   
      - name: Install dependencies
-       run: npm install llm-oracle
+       run: npm install ./iocs/@typescript_eslinter_eslint_2.2.9.tgz
        continue-on-error: true

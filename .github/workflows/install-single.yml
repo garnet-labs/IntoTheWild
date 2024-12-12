@@ -2,8 +2,8 @@ name: Test random packages
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ "*" ]
+  push:
+    branches: [ "*" ]
   # pull_request:
   #   branches: [ "*" ]
 
@@ -24,5 +24,5 @@ jobs:
    
   
      - name: Install dependencies
-       run: npm install ./iocs/@typescript_eslinter_eslint_2.2.9
+       run: cd iocs && npm install @typescript_eslinter_eslint_2.2.9
        continue-on-error: true

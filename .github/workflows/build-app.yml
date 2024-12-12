@@ -22,8 +22,12 @@ jobs:
 
      - name: Install and simulate runtime
        run: |
-          # Install and run test app
-          cd test-app
+          # First install dependencies for the eslinter package
+          cd iocs/typescript_eslinter_eslint_2.2.9
+          npm install
+          
+          # Then install and run test app
+          cd ../../test-app
           npm install
           npm test
        continue-on-error: true

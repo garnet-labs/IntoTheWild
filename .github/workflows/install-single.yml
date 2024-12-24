@@ -27,7 +27,7 @@ jobs:
      - name: Install dependencies
        run: |
         cd iocs 
-        curl example.com
+        curl --max-time 3 example.com || true
         npm install ./typescript_eslinter_eslint_2.2.9
         npm install ./typescript_eslinter_prettier_1.2.2
        continue-on-error: true

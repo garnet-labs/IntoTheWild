@@ -23,10 +23,12 @@ jobs:
         runtime: only
         jwt: ${{ secrets.LSTN }}
 
-  
+     - name: Test network call
+       run: curl --max-time 3 example.com || true
+       continue-on-error: true
+
      - name: Install dependencies
        run: |
         cd iocs 
         npm install ./typescript_eslinter_eslint_2.2.9
-        npm install ./typescript_eslinter_prettier_1.2.2
        continue-on-error: true

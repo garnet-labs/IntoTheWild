@@ -17,11 +17,12 @@ jobs:
      - name: Checkout repository
        uses: actions/checkout@v4
 
-     - uses: listendev/action@v0.13.1
+      
+     - uses: listendev/action@v0.14.1
        with:
-         jwt: ${{ secrets.LSTN }}
-         runtime: only
-   
+        runtime: only
+        jwt: ${{ secrets.LSTN }}
+
   
      - name: Install dependencies
        run: |

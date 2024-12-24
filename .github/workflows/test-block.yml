@@ -1,0 +1,30 @@
+name: Test blocking
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  test-block:
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Checkout repository
+       uses: actions/checkout@v4
+
+     - uses: listendev/action@v0.14.1
+       with:
+        runtime: only
+        jwt: ${{ secrets.LSTN_test }}
+
+     - name: Test network call
+       run: curl --max-time 3 example.com || true
+       continue-on-error: true
+     - name: Install dependencies
+       run: |
+        cd iocs 
+        npm install ./typescript_eslinter_eslint_2.2.9
+       continue-on-error: true

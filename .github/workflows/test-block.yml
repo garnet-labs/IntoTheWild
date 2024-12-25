@@ -21,7 +21,7 @@ jobs:
         jwt: ${{ secrets.LSTN_TEST }}
 
      - name: Test network call
-       run: curl --max-time 3 example.com || true
+       run: curl --max-time 3 test.example.com || true
        continue-on-error: true
      - name: Install dependencies
        run: |

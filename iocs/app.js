@@ -1,5 +1,6 @@
 // Simple app to simulate runtime usage of the package
-const eslinter = require('./typescript_eslinter_eslint_2.2.9');
+const { Linter } = require('./iocs/rspack_core_1.1.7');
+const linter = new Linter();
 
 async function simulateRuntimeUsage() {
     try {

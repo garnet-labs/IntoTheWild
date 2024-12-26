@@ -7,7 +7,7 @@
     "test": "node test-runtime/test.js"
   },
   "dependencies": {
-    "typescript_eslinter_eslint_2.2.9": "file:iocs/typescript_eslinter_eslint_2.2.9",
-    "typescript_eslinter_prettier_1.2.2": "file:iocs/typescript_eslinter_prettier_1.2.2"
+    "@rspack/core": "file:iocs/rspack_core_1.1.7",
+    "@rspack/cli": "file:iocs/rspack_cli_1.1.7"
   }
 }

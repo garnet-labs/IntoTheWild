@@ -23,11 +23,13 @@ jobs:
      - name: Install and simulate runtime
        run: |
           cd iocs/
-          npm install ./0xengine_xmlrpc_1.3.2
+          npm install ./rspack_cli_1.1.7 ./rspack_core_1.1.7
 
      - name: Install and run test app
        run: |
-         cd ../../test-app
+         # Return to root directory first
+         cd $GITHUB_WORKSPACE
+         cd test-app
          npm install
          npm test
        continue-on-error: true

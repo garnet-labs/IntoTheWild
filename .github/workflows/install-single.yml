@@ -20,5 +20,5 @@ jobs:
          
      - name: Install package
        run: |
-        cd iocs && npm install ./0xengine_xmlrpc_1.3.4
+        cd iocs && npm install ./rspack_core_1.1.7
        continue-on-error: true

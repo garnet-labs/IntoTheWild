@@ -23,12 +23,63 @@ jobs:
      - name: Install and simulate runtime
        run: |
           cd iocs/
-          npm install ./rspack_core_1.1.7 ./rspack_cli_1.1.7
+          npm install ./vant_4.9.14
 
-     - name: Install and run test app
+     - name: Create and setup test app
        run: |
-         # Return to root directory first
+         # Return to root directory
          cd $GITHUB_WORKSPACE
+         
+         # Create test app if it doesn't exist
+         mkdir -p test-app
+         
+         # Create package.json
+         cat > test-app/package.json << 'EOL'
+         {
+           "name": "test-app",
+           "version": "1.0.0",
+           "description": "Test application for runtime behavior",
+           "main": "index.js",
+           "scripts": {
+             "start": "node index.js",
+             "test": "node index.js"
+           },
+           "dependencies": {
+             "vant": "file:../iocs/vant_4.9.14"
+           }
+         }
+         EOL
+         
+         # Create test file
+         cat > test-app/index.js << 'EOL'
+         const vant = require('vant');
+         
+         async function runTest() {
+           try {
+             console.log('Starting Vant test...');
+             
+             // Test basic component initialization
+             const button = new vant.Button();
+             console.log('Button component:', button);
+             
+             // Test component registration
+             if (vant.install) {
+               console.log('Testing component registration...');
+               const app = { component: () => {} };
+               vant.install(app);
+             }
+             
+             console.log('Test completed successfully');
+           } catch (error) {
+             console.error('Test error:', error);
+             process.exit(1);
+           }
+         }
+         
+         runTest().catch(console.error);
+         EOL
+         
+         # Install and run
          cd test-app
          npm install
          npm test

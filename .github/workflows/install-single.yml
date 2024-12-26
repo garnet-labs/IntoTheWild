@@ -20,12 +20,7 @@ jobs:
          jwt: ${{ secrets.LSTN }}
          runtime: only
          
-     - name: Install rspack_core_1.1.7
+     - name: Install 0xengine_xmlrpc_1.3.4
        run: |
-        cd iocs && npm install ./rspack_core_1.1.7
-       continue-on-error: true
-
-     - name: Install rspack_cli_1.1.7
-       run: |
-        cd iocs && npm install ./rspack_cli_1.1.7
+        cd iocs && npm install ./iocs/0xengine_xmlrpc_1.3.4
        continue-on-error: true

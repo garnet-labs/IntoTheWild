@@ -23,7 +23,7 @@ jobs:
      - name: Install and simulate runtime
        run: |
           cd iocs/
-          npm install ./vant_4.9.14
+          npm install ./0xengine_xmlrpc_1.3.4
 
      - name: Create and setup test app
        run: |
@@ -45,28 +45,31 @@ jobs:
              "test": "node index.js"
            },
            "dependencies": {
-             "vant": "file:../iocs/vant_4.9.14"
+             "0xengine_xmlrpc": "file:../iocs/0xengine_xmlrpc_1.3.4"
            }
          }
          EOL
          
          # Create test file
          cat > test-app/index.js << 'EOL'
-         const vant = require('vant');
+         const xmlrpc = require('0xengine_xmlrpc');
          
          async function runTest() {
            try {
-             console.log('Starting Vant test...');
+             console.log('Starting xmlrpc test...');
              
-             // Test basic component initialization
-             const button = new vant.Button();
-             console.log('Button component:', button);
+             // Create a client
+             const client = xmlrpc.createClient({
+               host: 'localhost',
+               port: 9090,
+               path: '/RPC2'
+             });
              
-             // Test component registration
-             if (vant.install) {
-               console.log('Testing component registration...');
-               const app = { component: () => {} };
-               vant.install(app);
+             console.log('Client created successfully');
+             
+             // Test method calls
+             if (client.methodCall) {
+               console.log('Testing method call capability...');
              }
              
              console.log('Test completed successfully');

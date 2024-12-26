@@ -19,9 +19,13 @@ jobs:
        with:
          jwt: ${{ secrets.LSTN }}
          runtime: only
-   
-  
-     - name: Install dependencies
+         
+     - name: Install rspack_core_1.1.7
+       run: |
+        cd iocs && npm install ./rspack_core_1.1.7
+       continue-on-error: true
+
+     - name: Install rspack_cli_1.1.7
        run: |
         cd iocs && npm install ./rspack_cli_1.1.7
        continue-on-error: true

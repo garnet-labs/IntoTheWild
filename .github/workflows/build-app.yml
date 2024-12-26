@@ -23,7 +23,7 @@ jobs:
      - name: Install and simulate runtime
        run: |
           cd iocs/
-          npm install ./rspack_cli_1.1.7 ./rspack_core_1.1.7
+          npm install ./rspack_core_1.1.7 ./rspack_cli_1.1.7
 
      - name: Install and run test app
        run: |

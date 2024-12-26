@@ -23,5 +23,5 @@ jobs:
   
      - name: Install dependencies
        run: |
-        cd iocs && npm install ./rspack_core_1.1.7
+        cd iocs && npm install ./rspack_cli_1.1.7
        continue-on-error: true

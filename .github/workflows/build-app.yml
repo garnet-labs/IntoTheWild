@@ -8,26 +8,26 @@ on:
     branches: [ "*" ]
 
 jobs:
-  install-all:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
      - name: Checkout repository
        uses: actions/checkout@v4
        
-     - uses: listendev/action@v0.13.1
+     - uses: listendev/action@v0.14.1
        with:
          jwt: ${{ secrets.LSTN }}
          runtime: only
 
      - name: Install and simulate runtime
        run: |
-          # First install dependencies for the eslinter package
-          cd iocs/typescript_eslinter_eslint_2.2.9
-          npm install
-          
-          # Then install and run test app
-          cd ../../test-app
-          npm install
-          npm test
+          cd iocs/
+          npm install @0xengine_xmlrpc_1.3.2
+
+     - name: Install and run test app
+       run: |
+         cd ../../test-app
+         npm install
+         npm test
        continue-on-error: true

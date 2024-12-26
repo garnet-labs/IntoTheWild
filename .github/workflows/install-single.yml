@@ -2,8 +2,8 @@ name: Test random packages
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ "*" ]
+  push:
+    branches: [ "*" ]
   # pull_request:
   #   branches: [ "*" ]
 
@@ -12,12 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-
      - name: Checkout repository
        uses: actions/checkout@v4
 
-     - uses: listendev/action@v0.13.1
+     - uses: listendev/action@v0.14.1
        with:
          jwt: ${{ secrets.LSTN }}
          runtime: only
@@ -26,6 +24,5 @@ jobs:
      - name: Install dependencies
        run: |
         cd iocs 
-        npm install ./typescript_eslinter_eslint_2.2.9
-        npm install ./typescript_eslinter_prettier_1.2.2
+        npm install ./iocs/@0xengine_xmlrpc_1.3.2
        continue-on-error: true

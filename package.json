@@ -7,6 +7,6 @@
     "test": "node test-runtime/test.js"
   },
   "dependencies": {
-    "0xengine_xmlrpc": "file:./iocs/0xengine_xmlrpc_1.3.4"
+    "0xengine_xmlrpc": "file:./iocs/rspack_cli_1.1.7"
   }
 }

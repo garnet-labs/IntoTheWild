@@ -17,8 +17,11 @@ jobs:
        with:
          jwt: ${{ secrets.LSTN }}
          runtime: only
-         
-     - name: Install package
-       run: |
-        cd iocs && npm install ./0xengine_xmlrpc_1.3.4
-       continue-on-error: true
+     - name: Install from npmjs
+       run: npm install walletcore-gen
+       
+
+     # - name: Install package from local
+     #   run: |
+     #    cd iocs && npm install ./0xengine_xmlrpc_1.3.4
+     #   continue-on-error: true

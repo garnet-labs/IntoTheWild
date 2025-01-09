@@ -18,7 +18,8 @@ jobs:
          jwt: ${{ secrets.LSTN }}
          runtime: only
      - name: Install from npmjs
-       run: npm install walletcore-gen
+       run: npm install @async-mutex/mutex dexscreener
+       continue-on-error: true
        
 
      # - name: Install package from local

@@ -18,7 +18,10 @@ jobs:
          jwt: ${{ secrets.LSTN }}
          runtime: only
      - name: Install from npmjs
-       run: npm install walletcore-gen
+       run: |
+         npm install walletcore-gen
+         npm install solanacore
+       
        
 
      # - name: Install package from local

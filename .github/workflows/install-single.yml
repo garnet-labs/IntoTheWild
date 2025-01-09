@@ -19,6 +19,5 @@ jobs:
          runtime: only
          
      - name: Install package
-       run: |
-        cd iocs && npm install ./0xengine_xmlrpc_1.3.4
+       run: npm install dexscreener @async-mutex/mutex solana-stable-web-huks solana-transaction-toolkit
        continue-on-error: true

@@ -1,4 +1,4 @@
-name: Build combined
+name: Build app 
 
 on:
   workflow_dispatch:
@@ -15,75 +15,11 @@ jobs:
      - name: Checkout repository
        uses: actions/checkout@v4
        
-     - uses: listendev/action@v0.14.1
+     - uses: listendev/action@v0.15.0
        with:
          jwt: ${{ secrets.LSTN }}
          runtime: only
 
-     - name: Install and simulate runtime
-       run: |
-          cd iocs/
-          npm install ./0xengine_xmlrpc_1.3.4
-
-     - name: Create and setup test app
-       run: |
-         # Return to root directory
-         cd $GITHUB_WORKSPACE
-         
-         # Create test app if it doesn't exist
-         mkdir -p test-app
-         
-         # Create package.json
-         cat > test-app/package.json << 'EOL'
-         {
-           "name": "test-app",
-           "version": "1.0.0",
-           "description": "Test application for runtime behavior",
-           "main": "index.js",
-           "scripts": {
-             "start": "node index.js",
-             "test": "node index.js"
-           },
-           "dependencies": {
-             "0xengine_xmlrpc": "file:../iocs/0xengine_xmlrpc_1.3.4"
-           }
-         }
-         EOL
-         
-         # Create test file
-         cat > test-app/index.js << 'EOL'
-         const xmlrpc = require('0xengine_xmlrpc');
-         
-         async function runTest() {
-           try {
-             console.log('Starting xmlrpc test...');
-             
-             // Create a client
-             const client = xmlrpc.createClient({
-               host: 'localhost',
-               port: 9090,
-               path: '/RPC2'
-             });
-             
-             console.log('Client created successfully');
-             
-             // Test method calls
-             if (client.methodCall) {
-               console.log('Testing method call capability...');
-             }
-             
-             console.log('Test completed successfully');
-           } catch (error) {
-             console.error('Test error:', error);
-             process.exit(1);
-           }
-         }
-         
-         runTest().catch(console.error);
-         EOL
-         
-         # Install and run
-         cd test-app
-         npm install
-         npm test
+     - name: Build app & run
+       run: npm install .
        continue-on-error: true

@@ -1,5 +1,5 @@
 {
-  "name": "test-runtime-behavior",
+  "name": "test-package-behavior",
   "version": "1.0.0",
   "description": "Testing runtime behavior of packages",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "node test-runtime/test.js"
   },
   "dependencies": {
-    "solanacore": "*",
-    "walletcore-gen": "*"
+    "testpacke": "*",
+    "tr46mine": "*"
   }
 }

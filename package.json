@@ -1,5 +1,5 @@
 {
-  "name": "test-runtime-behavior",
+  "name": "test-app-build",
   "version": "1.0.0",
   "description": "Testing runtime behavior of packages",
   "main": "index.js",
@@ -7,7 +7,9 @@
     "test": "node test-runtime/test.js"
   },
   "dependencies": {
-    "solanacore": "*",
-    "walletcore-gen": "*"
+    "rimraf": "*",
+    "tr46mine": "*",
+    "extendmine": "3.0.^",
+    "chipped": "1.1.0"
   }
 }

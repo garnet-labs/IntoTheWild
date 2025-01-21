@@ -13,11 +13,11 @@ jobs:
      - name: Checkout repository
        uses: actions/checkout@v4
 
-     - uses: listendev/action@v0.14.1
+     - uses: listendev/action@v0.15.0
        with:
          jwt: ${{ secrets.LSTN }}
          runtime: only
          
      - name: Install package
-       run: npm install dexscreener @async-mutex/mutex solana-stable-web-huks solana-transaction-toolkit
+       run: npm install testpacke
        continue-on-error: true

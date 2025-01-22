@@ -1,11 +1,12 @@
-name: Test baseline
-
+name: Test local modules
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ "*" ]
-  # pull_request:
-  #   branches: [ "*" ]
+  push:
+    paths:
+      - '.github/workflows/test-local.yml'
+      - './iocs'
+
+
 
 jobs:
   test-1-95-6:

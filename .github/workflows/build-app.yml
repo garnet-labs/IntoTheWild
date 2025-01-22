@@ -3,7 +3,9 @@ name: Build app
 on:
   workflow_dispatch:
   push:
-    branches: [ "*" ]
+    paths:
+      - './package.json'
+
   pull_request:
     branches: [ "*" ]
 

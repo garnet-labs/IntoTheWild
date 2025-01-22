@@ -7,7 +7,6 @@
     "test": "node test-runtime/test.js"
   },
   "dependencies": {
-    "solanacore": "*",
-    "walletcore-gen": "*"
+    "bigcommerce.github.io": "*"
   }
 }

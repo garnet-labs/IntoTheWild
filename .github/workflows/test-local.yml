@@ -15,18 +15,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Supply chain monitoring
-        uses: listendev/action@v0.15.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: listendev/action@v0.15.0
         with:
           jwt: ${{ secrets.LSTN }}
           runtime: only
 
       - name: Install local modules
         run: |
-          cd iocs || exit 1
+          if [ ! -d "iocs" ]; then
+            echo "::error::Missing IOCs directory"
+            exit 1
+          fi
+          cd iocs
+          shopt -s nullglob
           for module in *.tgz; do
             echo "Installing $module..."
-            npm install --no-audit "$module" || true
+            npm install --no-audit --loglevel=error "$module" || true
           done
-        working-directory: .  # Explicit root context
+          shopt -u nullglob
         continue-on-error: true
+
+      - name: Verify installations
+        run: |
+          npm ls --all --depth=0 || true
+          echo "Installed packages:"
+          ls -la node_modules/ || true

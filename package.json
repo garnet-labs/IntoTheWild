@@ -7,7 +7,7 @@
     "test": "node test-runtime/test.js"
   },
   "dependencies": {
-    "solanacore": "*",
-    "walletcore-gen": "*"
+    "rimraf": "^5.0.5",
+    "arcus-cmd-utils": "file:./iocs/arcus-cmd-utils_1.0.0.tgz"
   }
 }

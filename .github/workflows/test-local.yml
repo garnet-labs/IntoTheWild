@@ -7,7 +7,6 @@ on:
     paths:
       - '.github/workflows/test-local.yml'
       - './iocs'
-
 jobs:
   test-local-modules:
     runs-on: ubuntu-latest

@@ -1,9 +1,0 @@
-{
-  "name": "typescript_eslinter_prettier_1.2.2",
-  "version": "1.2.2",
-  "main": "index.js",
-  "dependencies": {
-    "prettier": "^1.2.2",
-    "@typescript-eslint/parser": "^1.2.2"
-  }
-}

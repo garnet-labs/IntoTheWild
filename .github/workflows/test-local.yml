@@ -1,6 +1,8 @@
 name: Test local modules
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [ "*" ]
   push:
     paths:
       - '.github/workflows/test-local.yml'
@@ -18,7 +20,7 @@ jobs:
        with:
          jwt: ${{ secrets.LSTN }}
          runtime: only
-         
+
       - name: Install local modules
         run: |
           for module in ./iocs/*.tgz; do

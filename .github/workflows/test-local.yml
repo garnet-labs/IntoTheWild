@@ -14,16 +14,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
 
-     - uses: listendev/action@v0.15.0
-       with:
-         jwt: ${{ secrets.LSTN }}
-         runtime: only
+      - name: Supply chain monitoring
+        uses: listendev/action@v0.15.0
+        with:
+          jwt: ${{ secrets.LSTN }}
+          runtime: only
 
       - name: Install local modules
         run: |
-          for module in ./iocs/*.tgz; do
-            npm install "$module"
+          cd iocs || exit 1
+          for module in *.tgz; do
+            echo "Installing $module..."
+            npm install --no-audit "$module" || true
           done
+        working-directory: .  # Explicit root context
         continue-on-error: true

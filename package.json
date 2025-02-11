@@ -7,6 +7,7 @@
     "test": "node test-runtime/test.js"
   },
   "dependencies": {
-    "rimraf": "*"
+    "rimraf": "*",
+    "hcpss": "1.0.0"
   }
 }

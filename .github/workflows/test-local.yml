@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 18
 
-      - uses: listendev/action@v0.15.0
+      - uses: listendev/action@v0.16.0
         with:
           jwt: ${{ secrets.LSTN }}
           runtime: only

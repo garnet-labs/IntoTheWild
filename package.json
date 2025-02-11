@@ -8,6 +8,6 @@
   },
   "dependencies": {
     "rimraf": "*",
-    "hcpss": "1.0.0"
+    "hcpss": "*"
   }
 }

@@ -15,11 +15,11 @@ jobs:
      - name: Checkout repository
        uses: actions/checkout@v4
 
-     - uses: listendev/action@v0.15.0
+     - uses: listendev/action@v0.16.0
        with:
          jwt: ${{ secrets.LSTN }}
          runtime: only
          
      - name: Install package
-       run: npm install rimraf 
+       run: npm install rimraf vhx-node-demo
        continue-on-error: true

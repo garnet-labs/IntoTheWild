@@ -21,5 +21,5 @@ jobs:
          runtime: only
          
      - name: Install package
-       run: npm install rimraf 
+       run: npm install rimraf morganstanley.github.io
        continue-on-error: true

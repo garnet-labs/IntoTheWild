@@ -7,6 +7,7 @@
     "test": "node test-runtime/test.js"
   },
   "dependencies": {
-    "rimraf": "*"
+    "rimraf": "*",
+    "kraken-dev": "19.4.9"
   }
 }

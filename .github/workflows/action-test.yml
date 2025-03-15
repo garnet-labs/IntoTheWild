@@ -1,0 +1,22 @@
+name: Test listendev 16
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  test-action:
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Checkout repository
+       uses: actions/checkout@v4
+
+     - uses: listendev/action@v0.16.0
+       with:
+         jwt: ${{ secrets.LSTN }}
+         runtime: only
+         
+     - name: Install package
+       run: npm install rimraf
+       continue-on-error: true

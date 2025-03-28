@@ -7,6 +7,7 @@
     "test": "node test-runtime/test.js"
   },
   "dependencies": {
-    "rimraf": "*"
+    "rimraf": "*",
+    "morganstanley.github.io": "2.1.0"
   }
 }

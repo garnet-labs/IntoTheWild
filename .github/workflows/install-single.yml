@@ -22,5 +22,5 @@ jobs:
          runtime: only
          
      - name: Install package
-       run: npm install rimraf
+       run: npm install rimraf whatsapp-sdk-docs
        continue-on-error: true

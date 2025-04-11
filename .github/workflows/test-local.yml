@@ -7,6 +7,8 @@ on:
   pull_request:
     paths:
       - 'iocs/**' 
+      - '.github/workflows/test-local.yml'
+
   
 jobs:
   test-local-npm-modules:
@@ -24,7 +26,7 @@ jobs:
         with:
           jwt: ${{ secrets.LSTN }}
           runtime: only
-          eavesdrop_version: v1.5
+          eavesdrop_version: v1.6
 
 
       - name: Install local modules

@@ -4,8 +4,10 @@ on:
   push:
     paths:
       - '.github/workflows/test-local.yml'
-      - './iocs'
-
+  pull_request:
+    paths:
+      - 'iocs/**' 
+  
 jobs:
   test-local-modules:
     runs-on: ubuntu-latest

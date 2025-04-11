@@ -9,7 +9,7 @@ on:
       - 'iocs/**' 
   
 jobs:
-  test-local-modules:
+  test-local-npm-modules:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -24,6 +24,8 @@ jobs:
         with:
           jwt: ${{ secrets.LSTN }}
           runtime: only
+          eavesdrop_version: v1.5
+
 
       - name: Install local modules
         run: |

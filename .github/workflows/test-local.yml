@@ -21,12 +21,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - uses: listendev/action@v0.18.0
+          
+      - name: Run Garnet Security Scanner
+        uses: garnet-org/action@v1
         with:
-          jwt: ${{ secrets.LSTN }}
-          runtime: only
-          eavesdrop_version: v1.6
+          api_token: ${{ secrets.GARNET_KEY }}
+          debug: true
 
 
       - name: Install local modules

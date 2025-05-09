@@ -1,0 +1,66 @@
+{
+  "flow": {
+    "icmp": {
+      "code": "",
+      "type": ""
+    },
+    "ip_version": 4,
+    "local": {
+      "address": "10.1.0.205",
+      "name": "fv-az985-325",
+      "names": [
+        "10.1.0.205",
+        "fv-az985-325",
+        "fv-az985-325"
+      ],
+      "port": 45216
+    },
+    "properties": {
+      "egress": true,
+      "ended": true,
+      "incoming": false,
+      "ingress": true,
+      "ongoing": true,
+      "outgoing": true,
+      "started": true,
+      "terminated": true,
+      "terminator": true
+    },
+    "proto": "TCP",
+    "remote": {
+      "address": "206.189.156.69",
+      "name": "lxawnbeitdszmpksnhneab9v358u7sm6k.oast.fun",
+      "names": [
+        "206.189.156.69",
+        "lxawnbeitdszmpksnhneab9v358u7sm6k.oast.fun"
+      ],
+      "port": 443
+    },
+    "service_port": 443
+  },
+  "parent": {
+    "args": "sh -c node index.js",
+    "cmd": "dash",
+    "comm": "sh",
+    "exe": "/usr/bin/dash",
+    "exit": "2024-09-26T15:55:16Z",
+    "pid": 1861,
+    "ppid": 1849,
+    "retcode": 0,
+    "start": "2024-09-26T15:55:14Z",
+    "uid": 1001
+  },
+  "process": {
+    "args": "node index.js",
+    "cmd": "node",
+    "comm": "node",
+    "exe": "/opt/hostedtoolcache/node/18.20.4/x64/bin/node",
+    "exit": "2024-09-26T15:55:16Z",
+    "pid": 1862,
+    "ppid": 1861,
+    "retcode": 0,
+    "start": "2024-09-26T15:55:14Z",
+    "uid": 1001
+  },
+  "note": ""
+}

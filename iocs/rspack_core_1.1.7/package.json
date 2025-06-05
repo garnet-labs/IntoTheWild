@@ -52,7 +52,7 @@
     "tsup": "^8.3.0",
     "typescript": "^5.6.3",
     "watchpack": "^2.4.0",
-    "webpack-dev-server": "5.0.4",
+    "webpack-dev-server": "5.2.1",
     "webpack-sources": "3.2.3",
     "zod": "^3.23.8",
     "zod-validation-error": "3.4.0"
